@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EV Charge Network India — Find Nearby Charging Stations</title>
+  <meta name="description" content="Find nearby EV charging stations across India. Filter by AC/DC chargers, see compatible EV models, charging rates, and station amenities. Download our app for a seamless charging experience." />
+
+  <!-- Tailwind CSS (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e', /* primary */
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d'
+            }
+          },
+          boxShadow: {
+            soft: '0 8px 30px rgba(0,0,0,0.06)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet Map -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <style>
+    /* Improve tap targets */
+    button, a { -webkit-tap-highlight-color: transparent; }
+    /* Leaflet container height (mobile first) */
+    #map { height: 380px; }
+    @media (min-width: 1024px) {
+      #map { height: 520px; }
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-800 antialiased selection:bg-brand-100 selection:text-brand-900">
+
+  <!-- Header / Nav -->
+  <header class="sticky top-0 z-50 backdrop-blur bg-white/80 border-b">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <a href="#" class="flex items-center gap-2">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white font-bold">EV</span>
+        <span class="font-semibold">Charge Network</span>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#locator" class="hover:text-brand-600">Find Stations</a>
+        <a href="#features" class="hover:text-brand-600">Features</a>
+        <a href="#popular" class="hover:text-brand-600">Popular</a>
+        <a href="#faqs" class="hover:text-brand-600">FAQs</a>
+        <a href="#download" class="hover:text-brand-600">Get the App</a>
+      </div>
+      <a href="#download" class="hidden sm:inline-flex px-4 py-2 rounded-xl bg-brand-500 text-white font-medium shadow-soft hover:bg-brand-600">Download App</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-brand-50 to-white"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 grid lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
+          Find EV Charging Stations Across India — Fast.
+        </h1>
+        <p class="mt-4 text-lg text-gray-600">
+          Over <span class="font-semibold text-gray-900">7,000+</span> chargers in
+          <span class="font-semibold text-gray-900">63+ cities</span> including Delhi, Mumbai, Bangalore, and more.
+          Filter AC/DC, view compatible EV models, live rates, and amenities.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a href="#locator" class="px-5 py-3 rounded-xl bg-brand-500 text-white font-medium shadow-soft hover:bg-brand-600 text-center">Find a Station</a>
+          <a href="#features" class="px-5 py-3 rounded-xl bg-white border font-medium hover:bg-gray-50 text-center">Explore Features</a>
+        </div>
+
+
+<!-- Create Account Section -->
+<section id="create-account" class="py-12 lg:py-20 border-t bg-gray-50">
+  <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl lg:text-3xl font-extrabold text-center">Create Account</h2>
+    <p class="text-gray-600 mt-2 text-center">Join India’s largest EV charging network today.</p>
+
+    <form class="mt-8 space-y-4 rounded-2xl border bg-white p-6 shadow-soft">
+      <div>
+        <label class="block text-sm font-medium">Full Name</label>
+        <input type="text" placeholder="Your Name" class="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-brand-400 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Email Address</label>
+        <input type="email" placeholder="you@example.com" class="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-brand-400 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Phone Number</label>
+        <input type="tel" placeholder="+91 XXXXX XXXXX" class="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-brand-400 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Password</label>
+        <input type="password" placeholder="••••••••" class="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-brand-400 outline-none">
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Vehicle Model</label>
+        <select class="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-brand-400 outline-none">
+          <option>Select your EV</option>
+          <option>Tata Nexon EV</option>
+          <option>MG ZS EV</option>
+          <option>Mahindra XUV400</option>
+          <option>BYD Atto 3</option>
+          <option>Kia EV6</option>
+        </select>
+      </div>
+      <div>
+        <button type="submit" class="w-full px-5 py-3 rounded-xl bg-brand-500 text-white font-medium shadow-soft hover:bg-brand-600">Sign Up</button>
+      </div>
+      <p class="text-xs text-gray-500 text-center">By creating an account, you agree to our <a href="#" class="text-brand-600">Terms</a> & <a href="#" class="text-brand-600">Privacy Policy</a>.</p>
+    </form>
+  </div>
+</section>
+
+        <!-- Stats -->
+        <dl class="mt-8 grid grid-cols-3 gap-4 max-w-md">
+          <div class="rounded-2xl border p-4 text-center">
+            <dt class="text-xs uppercase tracking-wide text-gray-500">Stations</dt>
+            <dd class="text-xl font-bold">7,000+</dd>
+          </div>
+          <div class="rounded-2xl border p-4 text-center">
+            <dt class="text-xs uppercase tracking-wide text-gray-500">Cities</dt>
+            <dd class="text-xl font-bold">63+</dd>
+          </div>
+          <div class="rounded-2xl border p-4 text-center">
+            <dt class="text-xs uppercase tracking-wide text-gray-500">Uptime</dt>
+            <dd class="text-xl font-bold">99.2%</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="relative">
+        <div class="rounded-3xl border p-2 shadow-soft bg-white">
+          <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIALcAwwMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAGAAMEBQcCCAH/xABVEAABAgQCBQgGBwMHCAoDAAACAQMABAURBhITISIxQQcUMkJRYYGRI1JicXKhFSQzscHR8FNzshY0Q1SCksImY4SUotLh8SU1NkRFVZPD4vJWdLP/xAAZAQADAQEBAAAAAAAAAAAAAAAAAQIDBAX/xAApEQACAgEDAwMDBQAAAAAAAAAAAQIRAxIhMQRBURMiMhRhcSNCgZHw/9oADAMBAAIRAxEAPwAJdocizMsNTs8wLTwpmcb15bqmryvESo0UZR+oNyTunabBBBz1r/8AKBtlfRObWbLlPyW3+KNJmMRS1Qoj9NlKc2w9zYTRwd65d/3xMnXCOXNLSUU1yfvylEYnnX/TudFkdaxGYwJU5jaBgovKJiGclqCU8c4y8QllFlzWoxw9jfEJhmaJvL7Iw6Z1Lc4b5Px5topiayznVZiFUcPUqmBopt/K+PSGKWpV+pzczzx11wXx60V+jnqq8TuVx8+sW+CUbSp0NOggpDWHPpJoZ7MTBFl2YuscYXp1BBqoS+UpOYto2xJFMdV9cZ4gk0ftDDz8zMzGUXTcLL0R1rDUaVEvkNcI4S/lF9edzSlNElHMVsztt6DwRE3X169VuzY6TQaLRJPNIybDDQjmJ4hRV1JdSIl1/OKeWpwyUhIyLX2UvKaPL77XX3qqKvisO4/N8eTqoFL9LmwiXwqqIvyvDSodlJPY5wTMTLonT+di3tOPDIiSWuiXuqXtdU198fH8LYZxXTimcLvtyjvVcl9SIvYbfDyRYEeSTDVRqVRGpS7EtNU3MUpPy5OohaMxsq5V4a7p3j3RCqbFV5MMak2wRE2hZm83RmWVXUi9/DuVIVkqW9DoYDxdpMpS4iTLmy8Tqa7LqVNetF364ZxvT8ZaFp/EYPOSzOyLiAOQL9uWNYxDiZ2n0qmViSk+eyc1lzCJWcFDG4qPavC3ekT6ZUaVimm6WXLSNaxISGxtFuVCRdy/Je+HSBruZRQuT6cm6JzqXqtL0E0P22clypxHWiWVF3xKlcF0qVHQVHF9MY9VwSG9+zp3hrlEwC5ImU9SgzN5VImhTUqcVFOFuKeKRmd7QNEyhqRpNQw5hBHvreNhdyig5mWs2ZE70vriE9S+T/P/ANp58vhlF/3YCwXShoy6SdFYYNMq5YSY4rsGiyXJ+P8A45WC+GVH8UhspbAP/mtc/wBXCA2FDsqgxSXwH/5pXB/0ZtfxjhZLBJ9CuVYfikRX7igRhQWGkO6c1hCVOwYmmxbO2kbcp5WL32JYkzVFwqr2mp+IZDRuf1iXeDL28FjPUi2pQ85+rH1ujEydbmOSOn3r+Qw+hqH/APkNF/vl/uwoGyp+iJW9Fny6s2XfH2I1Ix9aBWtyxS5iL3RcuJdyKlr+G/wi/o7DrKNzJuDpJQsrrd97a6lt2pZfmkU9epU7T54mnkLuLgqdsSHJKoUzmhTKCKuj6Jwl1KK9Uu7sXh7t1PdGsorNj1R3TJWJ8PtyEyEzLzIuU+Z22nB3a96e/wDXCHqJWpak01+TNoXye6LhdWLRqXOSlklKgzziQfHO7LCV3JdV6w93b279+uB+r4bmJBvnkl9epzl8sw3rt3Em8VTjeJjLsZYM+n9PJz2f+7hBWgoYYVYyTLbky5tEI7xiDg/EsnQZnKYiTDmy5s31QIc1fPoARD7okSlOmpsxlpeVccfItkRG6l3Rrzyd2psJ8XVegHVdPR5bMJDmLZtridQqBXKwbDoUoZKRIkLnEwuUbX3Im9VXhDUlSsPYUdEsTF9I1Tq0+XVFBpeGcr2Ve7ckQZvFVRxDiqRF58uZ89bFmXHUAjnS2rjCe7EmbY6mecd/dh95xYpLNT1HKTmBzMONk04PrIqKip5LENEzzL/wh+K/jEyQP0JD6ri/ci/jFiMXp51LkoxqLjqOOU17ZIh3PNX8s6b7dvcsV/KK9V6rihKec67U2M+kpi6lU2nbENltddVk19kbZiGiSOIKa5I1BrM2XRIekBcCReCp/wAF1QN4FwN/J94pypvjNzjd2pQtdmWrquyi7lW637LqicbzQtO9kit0Eg5NHaOfpHZeQHo9ZxsUJLeKeUZRhfE85T58Z+XPNNtj9ZbzfztpN6r2mia771RL70W/oCYEXWSa9YVHz1R5XVXJKcLREQuMuLlLvRd8DGeoJGZk8Q0dqZl3czDw5m3B3gX5puVPfGK8pOECpky7UJRrKzm+stjubJdxD7C/JdUW3JtiZqmTjTRGLdMqR5Sb4Ssz2J2CSa08uCxrNYprVTkyE2hcLKo6MtzorvBffw7F96w0B5TRbQ+SacM3WHpRe41wy5h+fzNZip8xcpdwuHaBdipu/S2HGzyHmiWhNXujiFD74f0g9EoYgGnYoUKPqJAMcaCLmQb0W11v1+v+UQZJvrRNmXdEGX1oiT7HJmlq9qLb6Ulv0Sx9gUJzWsKJ9Mx+hh5CCRr+jZ5jU2udyA9H9oz8KrvTuXzSHp+ROaltPT5nn8s30ct8zSdhDvT37obqlOpwTJc0cmnR6uV0CXysi/KKxpxqWf0rM1MMuj1sqISeKLFfdGkK+eO1fK7M6lJ6Zl3hLMRaPZEs2sO5F7O5bp3QXUXFBNPDkIWyL7RxsU2/ibXUvvRb64GyqrEySc9BmZL9pkVh3u2hRUXxRYlsURieMeaTJCRdEXhvr7Mw3v5JFDyxhNVNUGLzEjWwcfl5YpZ1vaOYp7Sutj3m3bMPh5w7ikp7D9OBqjycsVXebyzs1JJcmQ4Dl3oqot1VUiLhMKvhmUqtTOazScuOiGVbNF0z/Abb0tvVNUAU1Uau5PlNzqPc5ec+0cQhW6rwLenZqWB2ycUcmNNQlafZlYucdI4akrhKo7W+671W/dq8Yfw9cMQ0z/8Aba/jSLKcxE8+5o5kG5tpvYQnwQ929UXUWtbrv4w3TZmmfSko7zdxkhfbL0bl01Ei9FUX74VvwdEckv3I9Ctfzl/4R/GHZTpv/vP8KQ4suPP3cjrf2Yd3E/COpZkgN3957+qnZGpetUdJH1Vjud+rs5mmH5l39myKX8VWyJ4rFCxiITnNBN06blP845kUL9+VVVPfa0PSyI5YSdJlvbbjzZimWbbqT8zL5hYefdHKWtRISsqX4prRUXvtwj0q4ogGlzbPSzcLdseY6484662J7OUSLL3mSnrTgtiRPCJZqM02aFpw2Jgi5rMWF7LvGy3Qk70XX3604x6A5N8RO1alFJzpD9JU+wO7XTHqmnaipxjzhBjg/EblGm5aphtFK2amW/2suq2RfeK6vEeyEgNsxlQpOp018Zsfqcx9qQ72XODqdiX1L57lJY884joM9h+fKUnm/wB26PQdHgqL+HCPU0somGlMtJmHMPZZd1vDjx+URZqh0iaaJiYkxJgv6GyK34At0TwSGB5Tlz/oy6JQ24OU7R6Pe5LMIPnm+jnhIv2bxCnki28o4Y5KMITTOnCWm837MpgtlU1KO+90XVvia3IcqdnnCHGQzR6Oa5LMICf/AFURfFMOL/ii2leTzCbP/gMoXxIpfeqw6FPIkjzezlAM0RJt3N1o9VDhHDjX2VBp3+rh+UNHRqY19lR5IfhlwT8IlQMMbuV0eT7wo9Y8wY/qct/cH8oUVR06jGWuTWsVCZzG1KMCXW51r8kzQRMcmNMpjJTWIKvmYZHMTfT1J4IvlA2WMMSSgaKXYIhy7JNgv5X80gbnp6u1MyKb56Wbq5Ct5WhbGUYpreQR1alYSqbzs1QnSlpGXyC44UudyNVsgpdUTX7olfyDmZJ5oZeouaUnQFsmdGS3VU3JpEXVvVe6OsEVCny4UymTcm+Ii64+64TS2I1Gwqt0tZEVfG0aPh6T+k5n6aCWcERFW5TnDIC4I31ldEvZbJa/BO+Da6TGo1+5mUcp7jMtOS1BB2dCWp4ZiJxi+mcLWTiqpa73te3bAhTnG5d0nWp6Yb0YKeyGXWmpNxdqpHqGoUNips6KoSbEy16rwIvl2QJTXJFh54yMG5uXFzpC27q336yXTXBRdXs2YMU67f8Anrjn7wEL71WOEmzE8wG2RDr/AJuHDwjfmOR/CodOWmXPimS/w2iWHJZg0OnSiL/SHPz/ABg0iSXZE5mZE5lggJv0zGboW4oqfxROlFHnhEY+10e6KldE1MsNSI5Wm3TlmxHWtkulr79Siib4nyTohOEObN1SLgPcnb741gY9Tfp+3k+4hq78gCtyuUXRHOZObr2vr7uEBclyjSM3M6CsSLklmJR5zqJm/eW9L+Pvg1rVLGqhrIRcIUExVbeKdqLAHVaA1hqbaOdyzEi9suCi9vH3pvhyurXJ5HT9Rlx5JuStdvwXdTq0nL4Yqs9Kvi9KCwogTa3RSLZSy9t1TzjA6yKc/Mmpd5lpbEIOb0uiLGucp2jlcKSgUscslpw0ooqrYbKqJ7r2+ULkrkmKnLT3O6dLTbQuBoZh5kXFFVTWKKqKtkSy24X74zT1Kz2enzLNBTRiVom093m8yLh62SuLo5k1iupeP6VEj1YNDpgdCnSQ/DLh+UOJSpEAIjk5YRHpehH8oR0AzyVzhVDBkpnc0hSpHLaQeKAthXytBgjcQZaYYDZl2hba9URt42TVE0HWj9mAB4AjhtspeZImhzNOfaDqTKW7MnDXxTuv2x90XtQiY+L9fdARJEhRHP0S/uw7aGm2s4bUfdDDRzyb4o7PoxXPFt//ABh6Zl9iKc6fngNMXktRQcqf7sKK/wCjRhQg3B+iM4bl5BrSyckJdYdKhfNbXizOfw3KM6c/o1hr1iINn5Rh9Fp4hMtTJi25lLNoyiqxHiGamZp+XaRJdjNlJsN0IIYnW7s9EUys0WqvkxSpyQmCEczmhNSypw3aot2CHogQ/wBkPzjG+QljLLVN/wBZwW/JL/jGvgvqQ0WsaRK0xbOQdJ6xZhTL5b47Qvh/XvgblKOMvOE+bpZidV3ZMtpbKiJa9rd266Xi2BzP1iL4fxXckMeyJipn/wDtH1A/X63xEB8fi+HcPvXjFdiB5/mYlKTOjIXE2sqKll4WVPwhUNSszGvYu+gcSVWnPNOc0emzLTDrcA7ot7erey2Tv33iypOOaLnLSzzLebaEiWyX479aeKQAco7boYhnBdLSO6dcxZbZlURW9uHugZAYaY9Ko9G06vMVsCGnuc9Fkkzc1JSyXva6juvZfKINZlJ7EGG553RZczxuy2Yk2tGqgiCm+yoK/wB6BPkYmykZbEbodIW2SH2iXSoieK2TxjTVQZGWlpEBzNS7ItCREtysiJdYrWzL6eF3Rm+HZhvFeHCoc605tZW9IJoi3QksqXRdepN/fGpYZoMnh+lsSMoOUWx6y3UlXWqqvFVWMQq0oOHsePiGXROEj7A61Xa1ogpe90JFRLdkb609nAS9YULz1xFVwPDhhiTUFSbslIkVteeySwsftC2vcn/G0TROBiuTZHVSHqtig/K6/fAjWXA6yGSJrRRXSzueJoLFEE9lwg6BRYMmJhFKDkWFPPbLwhMdlkCR9tCSFeGZMaeTYiHkiW6UR06YxJcODsk2lhQ04W2sKAdGIYapzXP2M/RcidV+R052fdmZec0YuFmy5Y0yVwpTpc2iAdpv2vyi6JRCEOOyADAeGf5KSb8jMui76XNmt0rp2Qa6HOz6IcvyzJ7t8ZNyr45qFMqjdMohiwWXO442O33Je+6CDkqxfN4lkHWp089QlXPS5RRM4luJbakXUqLDJuXfYLXBEPtf9rZTy3rEdx4ejtF7O4PzX5RJflAF4h2iLpCI61su667kjh0WpcPrZCP+bb1qXvWKVmMpJOuWMsI/MHlAdkfBB/XnDz+iaAmg9IRbJFwH3d/fDSTZOhlAdG16o/j2wy8exsQGkU3z/RhPKbsYknsn7dPm2KwOSQibw6Xo9aCTlPT/ACkqH78PmyECrSwjctpSqztJmS+hXXSDSATgquyaiSEiKnGyp81jZsM18sQUhioOt6GZJwhdEb2Q0Wy27tyxhUsmi0ntFmjfsBIxJYMp5y7A5nGdKRFrzESqqr5rCAp+UcTCgy1T2s0jPtOiXrXuK6/eqRoLTxOstOgJZXBQvNLwI43zT2Bqvpcuy2jmyPqEhf4YfpGIJORwrSpqoTgsaSWAREi2zJBRLCKa1W6bkSGILBcL2va2YC56rU52vTMsEzlfzfZuDlUltZUG+/dfvRdV0iUM7X6xsyLRUeRL/vEwKLMGnst7g95XX2YalMG0Nqsc5dk+czLbYlppoydMiUi2izLa+pNdtXC0HAnuSGFi0ZPPFRi+WqsvJt1HDjDb5MkvOZPJfOK7iSyot0Xs4LugNmeU7mICJ0chfy7QuPaPKvfcb27N/hDsWlmmlEmlPibwiBZtlSL7kSM9oU9iHEGinqnlkqYRehl2xVFdWy2IiXWooqatyL7t5Zhhsmpl8jH7QlIfaRFREt4CkD4E9gyQo4N4Q6ZCPxLDaNul0i0Y/P8AJI7bl2mizCO16y6181gOfdkGanSz5ZeVmXvaEUFPMlS8MA7UzMcktLN/vHlX5In4xbPpsQyCdL4YRoviU/8A0r60l5H+cKLG0KA1JiN546JkevDq+2UNuOiHRGEO2YljHC0zWMZaJqWcJkdp2YmFytCl+CJv7OMWcueH8KTbM4Uy23NStgflZK+UmyVEXMK8UWxXW26InKdUqlIYmB5t15JMmW/RtlbLclRVXt3317lRICjc53QpN+oTbj1QZbUXsy3VWXDIRuXHKqXvr1GicEhHEsGRy98tvCN/n58zZa5psiWz39qfKKGZdENp0v8Aa+9YiYPqZVbCssXSdb9E4PtAuVd/all19sXI0IZjantouqI7g/NYuzrUEuBmWdF0ByEJeyMdOw3MYaHpSj5NkPrfnEUQqsieV307Xn898IqjIOVH/tJPfvGv/wCI/lAcBxo+N8P1XEOKJsafLbHoicccXK2Ho0TWS7+GpLr3RQzGD5Wn5fpOssCXWbl0D/3DFf8AZgoYPMubEbhhmv06k4MpBVB/LmYERbEVIy1qlkRNa+7jGNVeTlpJ7QSjrjg5drSCG/uyqSKlrcY1Dk2+ggkJF3StlV9Euy8W2CZlSwIu5O9N/FYALisfTVYoNQGXlhp1NJhwi50OaYeTKupARbNovaqqWvckccmEnIu4bk6nzZvnxCTZTBDc7ISoiIq7ksiakgvqHpaPM+00f8KwHckLmfBMsPquuD87/jAAcQw3/P3/AN03/EcPJEcP+sn/ANy3/EcAiYkCbX1upT09MC2+JTats6QELKLaIGq/ehL4xT4h5SPozED9Kl5ZvKzYSmHFVdtURbZUtq1ol7+EdYMr7VYlikcv1yXeTo9dCTf77ot4KA0B1sXQITaEuts6l1dixMw9TWqdLZQHa6xF361jpWxaDbLo9Io+S87zgC5vmEc2XN627X3QETdE9+Zaa6ZbXqjFdNVN0Q9E0P8Aa1xCqtVp1MDNUJltv2c118oAK7yu0yXzDTJFyZ9pwkFPxVYDnuUmH4zk9MMl6XKXsiiRWq7UdCX1x/petGWDyvVx10hl5GSbzbswkS/ekQpzlRxGB5c0l/6K/nCspRak0a3pqj/WX/14QoyFOVTENvspD/0i/wB6PsFl7npFVjhxRgD0lR/rJf3o+JOT2f7Vz++sI29wPcsBOzVQCmBm9NTXDERG+YgMTSydqoCp4xninLTjM5NDmbbGRYlZYC9dEut+22jLzSCXlFqgSlbYdnpaZedKUQWXm5kmiZ2iuSKia1tq16t/bArOo/MfR8205ppRx/7QmkB3MqoiaS2pdyohJvsvGGgQcckdRzvVCnZukIviObiqZS924V8Y0VmeflzyhtNe1rjBsF1IabienvullbIlYc18C3fO0bxoSnpbTtbWUlEtHa4qnduXVZdVt8MZaS9WlXdl30Ze1u84pca4ok8PyBOE4OlIdncuW+6ycVXgm7ivfGdcGRln5mY2mmRUiy9vAe1FVbJZe2McqtUdruIeczGZyWlSUm2R6xXslu9VRETuRIAOsS4oq86GSYmnpeWLa5s2a6Rb7tIXbxsmpL2te6JS0ltiXZcq802JC2ShLMlrQ3LXuV+A3Re9bJ2xcY7opUZ5iTXamXGGnXyzXzOEp3RO5NSJ7r71WKOvuCJsSLP2Uq2g+8l1kvvVVX5QAXHJ5SJTEddmWKtpiAWFd9GeVVXMKa19yxfYrw5N4ZZ08pmqNDEsxS8xrOXVeIkmtPiS3eixC5EgE8WvgfWkT/iCNnnqZ6Ehyi40Q5XGy3Ei6lSADO8KYytIOSM3MuTMi4yYy8w8XpGTyqqNO9qLbZLj91vyRAQYJYL1n3P4rfhGXVimu4axVOU9rNoMpZc2vM2oqSX7batfal41Xkynhl8GSIgOYRI9J25lJVX5EkABmJRw2Oecd/dD8iL84daRqYDSy5Zh6w+rHLaE1P7Y5czP3En5wAY9yh4Rqv09OVOUk3JmWmCRzMztKC5URUVN+9L3tbXE7kapc8FbmZyoMON5WxbHSDbMqrdfJE+caxMy+dl3J1hX7o4p6NSksww0I5s20Q78y618oAJVT9LLOj1dXyWM+xLjsaYyUtTC2ivlcHefBcvYnfx4dsSeUrEoyEo7JgWyIpp8q6zJei2nv3r3RiLk07MPFNTBZnHC/uonZ2ImpIT2RhPcl1SqTM8ZOzbpE4XV12Tv71711xRmZGcPTDkMXyBm6xQh440Oy56J0RDpdYvwjqcT0o+6IzPTGJs2y7kzZS6WWE+Ry2miAR61hR3oHPVKPkM0tHplWx68Ng00BxJOWIOtDDzJAGwUA00wIx/TqfNV6jFUHS0Dgk0LYovpTUkyiq8EuV1XfZFtrgfeqQ0+ZlJYGG5mWnJvROuEFkdRtciIKdRBJbiia0yoq3vF/jWUmfqM4YlllZttzwzIq/dAVRZxspl+Tm82iJ0puWctfROCq38FRLL3oixSYA7Nnl2R7el4xsmBsZNky07pBccJtBmZcSTSIqaswou/iurgsYvOEOmLJtBmXLDArl2hXahDPQXKLV5WYoksVPdFznDhkRDvytiqqK8UsqovhGXYGY0uJabJvjtE+JmOXXcEU0TzFI6wvOzM3NU/6Sf0jDjrjAk5a45hRLqu9d6b+yOqZUPo/lKYmZtNFoZsGnhtuXLkJfNVWGIu+Vhf8p2C/wAw0XkRxm8+elnHS9qNQ5ZyaOqyz7RCQlKBtD1ts/zjLZtMsyf97zS8Aw35GH+b4vMsmb6m5s3t1hX8I3yXnpabDKBZS/Zual/4x575Iy/yt/0Zz8FjaSFoMzruUREcxEXVRNarCAzXloBqXxDp/wClckgb8MxKq/JE8Ykciz/O5ap0w+rkfb8dSp7ronnAVjasliGsTM8Gbmzdmpb4UWyeetfGC7kdyyOLZxo9kRksrnvQh/G8MDSxYmaeelDo9bL+MT5eaF2ZaJ3aHRll9nWMW4ttTAZgISHzinm5PmMy060OyVxIfV1Xv8oBFmiiYeiL+zFc+o0+TKcd6LIq4XlqTz++JEuW3FPjiYFqlC0f9M8mb4URVX7oFyTJ0jD8bVJ2drQyxlmyFnd9pw9a+SKiecUYhnPReqPz4/OOJiYOan35vNtOOqfmt0jqXcyPZvfEt2zORCmV28sWVNoszU8rpZWGNQ6Rzj7k3rFhhegjUpkH55wWpZSTKTl7a13qnFO7j7otK1WGGp92WoLRZW/R6Yt523l2Il+CWTVDSNFsiSzhumyssQiPpXLZXpo7ZbLrVBTt77w+zOsUwC9PLZcyZfRIWtLpfWvevnAfNzRn/OJvaLqt6/8AhHD5yhS32j/ygbMJL3JhA8lMJ0i54O0ub7JOOvthQIXk/Wf+UKCzbQerll8+aGnJP1PVhtufHOPjEtmea2RPLCOH9SAK4tZd+h3WGmtI650R7xW6fNEjH5w6e0DrtPacbLRq2QvLdRJSVVFEtuuu+67kj0c8EtNhlMf7XEVgDxXybyNTN1+XIpZ8trMOsT96dvekDNF1NfI8/O9OOIP6lya1qUMtE0L45dkmy/OKabwbWJQNLMSJi362ZPnCs3j1EJdyslpxcjTA5R0dyEhSy336184Iq9LrXpL+UchtTTYoNUaHpAQ2RHkTsVES9ty++8DLtPflzH0RZtRdFYmU+fnKZONTkk64w76w+Sovb3ou9IpNG2pMkT9TnKtSCcnndM6zZsSsl1HMi67b1uq64qHk00sL49JvZL3cF/DygsYqVFqZuDO0UmH3OmVPMRF3v0Rar/CqRDGVw81OEMuVYIv6uTTQ+9FUiXV4LDoLJvI6gnjVoTIh+ru7Qla2zBHyjYr59paHQS0w5kGZmGxtn7AS2pdfZvgWl2GJeZJo2jobDgr6Z7OTrorvFHLWRO2yRZM1Kg0yTyy74i+N8vNQ0hinFUJdWZfWXd36rNILI1LpLUpLP1CeHNLU/wBG23+2mV1oKdtlW3jfgsEHJJLF/wBK1V3pPEjXxKlyL708oonFnqgEhJssE269s0uQRbqCFfM+4u9SVLqir3luTXrVMw39CUWWkZcNM0yG043qJSXWq23LdVXVqhATZV8mtpoiH4YnJVSN5pqYHMJCW1x4fmsUjQln9EWk9nLYx94rr8rw4h55lj4lH5L+UMC+lxHPmAtn+GAvlUeIKKRD0hBzL71sKfxQYSxQF8q45cLPl1tX8YRJhOWxh2jyMiXrfhDtOlCqE4LX9GO04XdCnlySzHwfet4taO1zelE50X5otn4dyfn4xKQ4b7kqdn2h2M2WWl7ZsvWVNyJ71+UVklIuTrJzMw6MlTxLaec6y77CiazLuTUkPUenfTVSdAhcKRk2zdc0e93Kl1EeF14d11irrNSfnpgScAW2hHKwy30Gw4IP4rxi/wAmjvhF5QXcOFV5aUKRN5h4tGUxMnruupFQE1Il7cVWJlfq9Toj0zTmjlASXLR5RlQRVTgu7XdLLfvgLlSFJgSMyHjmHeipBtjZkath+mYjl+k4OgmR9Ux/S+FoNRjOHvV8A7/Kmo9kp/qrf5Qoo7QoWpm+mPg9MHmDZzZhjoXo+MuCYaI/7Psr+Uc9Dp9WAS8MmBMe1l/SRIGd+La/WqK1DjsSgomWKLJjk4XXazesQ6l8YipMSuyLo9LZLs19qcY6F8g9qGZmW5xtNdL1c1vKFRzy6SLBTFFFlWvrMoI820mUhIfsi169XBYEJqkNGBNOtF0ukOvxjRXhdDM1MNZs2zta0JOxeEDVXorsvmmaZpMv9JL5tYd49qd0Jx8EfTzjwwIfoTjQOE1mLL0S7+zuX9a4r5qRmQ+1li+LLBNOVN/mDg6XpNl0hTh2xQM1uZDLtl5wtyk8q+5WhJuu9FpzL7IraH2ZcpQxfed0ejJCFsRRTVUW6alSyJft8ouJetPzBi06+5l9UtabvKOnpeTdMujm+K0Gov15L5IdwpiwaTUn56YEhnHi/nRJpEEVtcVS10TUmtO5LWS0a7Rccys2A8+EWxLovNlmbLx4L3LZe6MQcpjWzlIh+fCO5Nubp7xOyUzoyLpDwJOxUXUqe+HqKXUQPSWgk6mAkGVz1XB3j4wxMU91oxLLzkRL3ODqVN/HxjIqBiZyXyi79UL1m1VWi8L3DwundGgytSnnQaIJl8c210syEnaJJqVNcNOyZdRHyEUsI7RZviEtSj70/KBDlYT/ACQf9kh/iRfwgll3nXTyulmih5R5XnGDKg2GbMLeky/Ct1+V4ZkpqbMAm3OcAwIfDF9W1+j5Mmus22LTfimtfK8UVIaz1KWbPo6YS8luvygjyBUMVSIvfYaUpl34AuSp5CqeMI7Uktjn6RLDVQpkm1/3Gzs4PruOCmdF7bCqIidyxU4ppo06qHzf+avelYL2VXd4flFbPzDk3OOzL32rxk4fvVVVYNpWSLEeBMobU9TXNkeKjbd4p80h3tQ3zYCsDtwa4ImudsT2HHSH64Glls24XRS6edk1diLAgLeUIl0FX0q7EzL5hKXJHPJd3juifuT8mSip4uGRLLtNLmVCbSayoKotlSy7tcKNXdwNS6+f0syEugTaI7tIt7qmvj23hRrqiVTLYD6sPo6LwFnHaGFCiRS5OEez9WOgNMmbMsKFAWIXU7Vhxtzo7ZezChQAKZbCbYsZauquXXFUTbssYieX2cv3woUMAF5Q5ZthGnm2hFx1t3OY6s1kRUVU7dcZxnKPsKJYiTTnC542PrFFu6Qn1e3NChQg0ojqRh0SLz74ebmJheOYS9a0KFEmGTHHwTJeYPJtAP6SLSmYomaXkJgyAeLZbTZbt4/jvhQok4HijJ7oPcOco9Nn5kJWZacl3y2RREUxJdW5d6ePnBnMOyM7LEw4IkLwqJbK8UsvDvhQo0TIniWP4swKWpjcrifmha9C6QeV/wAotZWnthOVB3J9nSXMuviaoN/IlhQozL9SW2/YEZmSHTQaYAdGm4paYJLsTTSNEPtbxX9dsfIUFsuWSVcjPKLhsKVUCel7CxMbYj6uvWnuv8l7orsIU5vI+fWhQoMnBXT5JaeQglanPSjAMSc8osD0Esuq+v8AGFChRGpnVrkf/9k=" alt="EV charging" class="rounded-2xl object-cover w-full h-72 sm:h-96">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Locator -->
+  <section id="locator" class="py-12 lg:py-20 border-t">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Controls -->
+        <aside class="lg:w-80 shrink-0 space-y-4">
+          <h2 class="text-2xl font-bold">Station Locator</h2>
+          <p class="text-sm text-gray-600">Search by city or use “Near Me”. Filter by AC/DC and speed.</p>
+
+          <div class="rounded-2xl border p-4 space-y-4">
+            <div>
+              <label class="text-sm font-medium">Search City or Station</label>
+              <input id="searchInput" type="text" placeholder="Try: Delhi, Mumbai, Koramangala…" class="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-brand-400">
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium">Charger Type</span>
+              <div class="flex items-center gap-2">
+                <label class="inline-flex items-center gap-1 text-sm">
+                  <input id="filterAC" type="checkbox" class="rounded" checked>
+                  <span>AC</span>
+                </label>
+                <label class="inline-flex items-center gap-1 text-sm">
+                  <input id="filterDC" type="checkbox" class="rounded" checked>
+                  <span>DC</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium flex justify-between"><span>Min Speed (kW)</span><span id="speedValue" class="text-gray-700">0</span></label>
+              <input id="speedRange" type="range" min="0" max="150" step="10" value="0" class="w-full">
+            </div>
+
+            <div class="flex gap-2">
+              <button id="nearMeBtn" class="flex-1 px-4 py-2 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600">Near Me</button>
+              <button id="clearBtn" class="px-4 py-2 rounded-xl border font-medium hover:bg-gray-50">Clear</button>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border p-4">
+            <h3 class="font-semibold mb-2">Results</h3>
+            <ul id="resultsList" class="space-y-3 text-sm"></ul>
+          </div>
+        </aside>
+
+        <!-- Map -->
+        <div class="flex-1 min-w-0">
+          <div id="map" class="rounded-3xl border shadow-soft"></div>
+          <p class="mt-3 text-xs text-gray-500">Data is illustrative. For live availability and pricing, use the mobile app.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-12 lg:py-20 border-t">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-extrabold">Why charge with us?</h2>
+      <p class="mt-2 text-gray-600">Everything you need for seamless city and highway charging.</p>
+      <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="rounded-2xl border p-6">
+          <h3 class="font-semibold">Charger Types</h3>
+          <p class="mt-2 text-sm text-gray-600">AC Type 2 (7.4–22 kW) & DC CCS2 (30–150 kW). Choose faster DC for road trips; AC for workplace or overnight.</p>
+        </div>
+        <div class="rounded-2xl border p-6">
+          <h3 class="font-semibold">Compatible EV Models</h3>
+          <p class="mt-2 text-sm text-gray-600">Tata Nexon EV, Tiago EV, MG ZS EV, Mahindra XUV400, BYD Atto 3, Hyundai Kona, Kia EV6, and more.</p>
+        </div>
+        <div class="rounded-2xl border p-6">
+          <h3 class="font-semibold">Transparent Rates</h3>
+          <p class="mt-2 text-sm text-gray-600">Per-kWh pricing shown up front. See estimated session cost before you plug in.</p>
+        </div>
+        <div class="rounded-2xl border p-6">
+          <h3 class="font-semibold">Station Amenities</h3>
+          <p class="mt-2 text-sm text-gray-600">Parking, restrooms, café/food, 24×7 access, security, and contactless payments.</p>
+        </div>
+        <div class="rounded-2xl border p-6">
+          <h3 class="font-semibold">Reliability</h3>
+          <p class="mt-2 text-sm text-gray-600">Real-time health monitoring and proactive maintenance for high uptime.</p>
+        </div>
+        <div class="rounded-2xl border p-6">
+          <h3 class="font-semibold">In-App Controls</h3>
+          <p class="mt-2 text-sm text-gray-600">Start/stop charging, track live kW & kWh, see SoC estimates, and get receipts instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular locations -->
+  <section id="popular" class="py-12 lg:py-20 border-t">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-extrabold">Popular Charging Locations</h2>
+      <p class="mt-2 text-gray-600">High-demand areas across metro and corridors.</p>
+
+      <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="rounded-2xl border p-5">
+          <h3 class="font-semibold">Delhi NCR</h3>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>Connaught Place (CP)</li>
+            <li>CyberHub, Gurugram</li>
+            <li>Noida Sector 18</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border p-5">
+          <h3 class="font-semibold">Mumbai</h3>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>BKC</li>
+            <li>Powai</li>
+            <li>Lower Parel</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border p-5">
+          <h3 class="font-semibold">Bengaluru</h3>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>Indiranagar</li>
+            <li>Koramangala</li>
+            <li>Whitefield</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border p-5">
+          <h3 class="font-semibold">Hyderabad</h3>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>HITEC City</li>
+            <li>Banjara Hills</li>
+            <li>Gachibowli</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border p-5">
+          <h3 class="font-semibold">Pune</h3>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>Baner</li>
+            <li>Viman Nagar</li>
+            <li>Kharadi</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border p-5">
+          <h3 class="font-semibold">Chennai</h3>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>OMR</li>
+            <li>Guindy</li>
+            <li>Velachery</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs -->
+  <section id="faqs" class="py-12 lg:py-20 border-t">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-extrabold">FAQs</h2>
+      <div class="mt-6 divide-y rounded-2xl border">
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">How do I find nearby charging stations?</span>
+            <span class="ml-4 transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-gray-600">Use the Station Locator above. Tap “Near Me” to detect your location and view the closest chargers with directions.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">What charger types are supported?</span>
+            <span class="ml-4 transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-gray-600">We support AC Type 2 (7.4–22 kW) and DC CCS2 (30–150 kW). Most modern Indian EVs are compatible.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">How are charging rates calculated?</span>
+            <span class="ml-4 transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-gray-600">Pricing is per-kWh and varies by station and time of day. The app shows an estimate before you start.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <span class="font-medium">What amenities are available?</span>
+            <span class="ml-4 transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-3 text-sm text-gray-600">Amenities vary by site and can include parking, restrooms, café/food, and 24×7 access.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download App -->
+  <section id="download" class="py-12 lg:py-20 border-t">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl lg:text-3xl font-extrabold">Charge smarter with our app</h2>
+      <p class="mt-2 text-gray-600">Plan routes, start/stop sessions, track costs, and get receipts — all in one place.</p>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#" class="px-6 py-3 rounded-xl bg-black text-white font-medium shadow-soft">Get it on Google Play</a>
+        <a href="#" class="px-6 py-3 rounded-xl bg-black text-white font-medium shadow-soft">Download on the App Store</a>
+      </div>
+      <p class="mt-3 text-xs text-gray-500">Links for demo only.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white font-bold">EV</span>
+          <span class="font-semibold">Charge Network</span>
+        </div>
+        <p class="mt-3 text-sm text-gray-600">India’s fast-growing EV charging network with 7,000+ stations across 63+ cities.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold">Company</h4>
+        <ul class="mt-3 space-y-2 text-sm text-gray-600">
+          <li><a href="#" class="hover:text-brand-600">About</a></li>
+          <li><a href="#popular" class="hover:text-brand-600">Locations</a></li>
+          <li><a href="#features" class="hover:text-brand-600">Features</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold">Support</h4>
+        <ul class="mt-3 space-y-2 text-sm text-gray-600">
+          <li><a href="#faqs" class="hover:text-brand-600">FAQs</a></li>
+          <li><a href="mailto:support@example.com" class="hover:text-brand-600">support@example.com</a></li>
+          <li><a href="tel:+911234567890" class="hover:text-brand-600">+91 12345 67890</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold">Legal</h4>
+        <ul class="mt-3 space-y-2 text-sm text-gray-600">
+          <li><a href="#" class="hover:text-brand-600">Privacy Policy</a></li>
+          <li><a href="#" class="hover:text-brand-600">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-xs text-gray-500 flex flex-col sm:flex-row gap-3 justify-between">
+        <p>© <span id="year"></span> EV Charge Network India. All rights reserved.</p>
+        <p>Made with ⚡ in India.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Station Data (Sample / Demo)
+    const stations = [
+      {
+        id: 'DL-CP-001',
+        name: 'CP Multi-Level Parking',
+        city: 'Delhi',
+        lat: 28.6315, lng: 77.2167,
+        types: ['AC','DC'],
+        speeds: [22, 30],
+        rate: 18, // ₹/kWh
+        amenities: ['Parking','Restrooms','Cafe','24x7'],
+        compatible: ['Nexon EV','Tiago EV','MG ZS EV','XUV400']
+      },
+      {
+        id: 'DL-AERO-002',
+        name: 'Aerocity Plaza',
+        city: 'Delhi',
+        lat: 28.5495, lng: 77.1220,
+        types: ['DC'],
+        speeds: [60],
+        rate: 22,
+        amenities: ['Parking','Cafe','Security','24x7'],
+        compatible: ['Nexon EV','Kona','ZS EV','EV6']
+      },
+      {
+        id: 'MB-BKC-101',
+        name: 'BKC Business Hub',
+        city: 'Mumbai',
+        lat: 19.0678, lng: 72.8670,
+        types: ['AC','DC'],
+        speeds: [22, 150],
+        rate: 24,
+        amenities: ['Parking','Restrooms','Food Court'],
+        compatible: ['EV6','Atto 3','ZS EV','XUV400']
+      },
+      {
+        id: 'MB-POW-102',
+        name: 'Powai Lakeside',
+        city: 'Mumbai',
+        lat: 19.1176, lng: 72.9052,
+        types: ['AC'],
+        speeds: [7.4, 22],
+        rate: 16,
+        amenities: ['Parking','Cafe'],
+        compatible: ['Tiago EV','Nexon EV','Kona']
+      },
+      {
+        id: 'BLR-KRM-201',
+        name: 'Koramangala Social',
+        city: 'Bengaluru',
+        lat: 12.9352, lng: 77.6245,
+        types: ['DC'],
+        speeds: [60],
+        rate: 20,
+        amenities: ['Parking','Cafe','24x7'],
+        compatible: ['Nexon EV','ZS EV','XUV400']
+      },
+      {
+        id: 'BLR-WFD-202',
+        name: 'Whitefield Tech Park',
+        city: 'Bengaluru',
+        lat: 12.9698, lng: 77.7499,
+        types: ['AC','DC'],
+        speeds: [22, 30],
+        rate: 18,
+        amenities: ['Parking','Restrooms','Security'],
+        compatible: ['Tiago EV','Nexon EV','Kona','Atto 3']
+      },
+      {
+        id: 'HYD-HITEC-301',
+        name: 'HITEC City Central',
+        city: 'Hyderabad',
+        lat: 17.4483, lng: 78.3915,
+        types: ['DC'],
+        speeds: [120],
+        rate: 26,
+        amenities: ['Parking','Restrooms','Cafe','24x7'],
+        compatible: ['EV6','ZS EV','Atto 3','XUV400']
+      },
+      {
+        id: 'PUN-BAN-401',
+        name: 'Baner High Street',
+        city: 'Pune',
+        lat: 18.5590, lng: 73.7769,
+        types: ['AC'],
+        speeds: [22],
+        rate: 15,
+        amenities: ['Parking','Cafe'],
+        compatible: ['Tiago EV','Nexon EV','Kona']
+      },
+      {
+        id: 'CHE-OMR-501',
+        name: 'OMR IT Corridor',
+        city: 'Chennai',
+        lat: 12.9692, lng: 80.2466,
+        types: ['DC'],
+        speeds: [60],
+        rate: 21,
+        amenities: ['Parking','Restrooms','24x7'],
+        compatible: ['ZS EV','XUV400','Kona']
+      }
+    ];
+
+    // Map Init
+    const map = L.map('map', { scrollWheelZoom: true }).setView([20.5937, 78.9629], 5); // India center
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marker icons
+    const greenIcon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      shadowSize: [41, 41]
+    });
+
+    // Add markers
+    const markerGroup = L.layerGroup().addTo(map);
+    const markersById = {};
+
+    function formatStationPopup(s) {
+      const types = s.types.join(' / ');
+      const speeds = s.speeds.join(', ') + ' kW';
+      const am = s.amenities.join(', ');
+      const comp = s.compatible.join(', ');
+      return `
+        <div class="text-sm">
+          <h4 class="font-semibold">${s.name}</h4>
+          <p class="text-gray-600">${s.city}</p>
+          <ul class="mt-2 space-y-1">
+            <li><strong>Types:</strong> ${types}</li>
+            <li><strong>Speeds:</strong> ${speeds}</li>
+            <li><strong>Rate:</strong> ₹${s.rate}/kWh</li>
+            <li><strong>Amenities:</strong> ${am}</li>
+            <li><strong>Compatible:</strong> ${comp}</li>
+          </ul>
+          <button onclick="alert('Open directions in app')" class="mt-3 w-full px-3 py-2 rounded-lg bg-brand-500 text-white">Get Directions</button>
+        </div>
+      `;
+    }
+
+    function renderMarkers(filtered) {
+      markerGroup.clearLayers();
+      filtered.forEach(s => {
+        const m = L.marker([s.lat, s.lng], { icon: greenIcon }).addTo(markerGroup);
+        m.bindPopup(formatStationPopup(s));
+        markersById[s.id] = m;
+      });
+    }
+
+    // Filters
+    const searchInput = document.getElementById('searchInput');
+    const filterAC = document.getElementById('filterAC');
+    const filterDC = document.getElementById('filterDC');
+    const speedRange = document.getElementById('speedRange');
+    const speedValue = document.getElementById('speedValue');
+    const nearMeBtn = document.getElementById('nearMeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultsList = document.getElementById('resultsList');
+
+    speedValue.textContent = speedRange.value;
+
+    function matchesFilters(s) {
+      // Charger type filter
+      const wantAC = filterAC.checked;
+      const wantDC = filterDC.checked;
+      const hasAC = s.types.includes('AC');
+      const hasDC = s.types.includes('DC');
+      if (!( (wantAC && hasAC) || (wantDC && hasDC) )) return false;
+
+      // Speed filter
+      const minSpeed = parseFloat(speedRange.value);
+      if (Math.max(...s.speeds) < minSpeed) return false;
+
+      // Search filter
+      const q = searchInput.value.trim().toLowerCase();
+      if (!q) return true;
+      const hay = `${s.name} ${s.city} ${s.id}`.toLowerCase();
+      return hay.includes(q);
+    }
+
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371; // km
+      const toRad = deg => deg * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+      return 2 * R * Math.asin(Math.sqrt(a));
+    }
+
+    function updateResults(list, userLoc) {
+      resultsList.innerHTML = '';
+      const items = list.map(s => {
+        const li = document.createElement('li');
+        li.className = 'rounded-xl border p-3 hover:bg-gray-50';
+        let dist = '';
+        if (userLoc) {
+          const d = haversine(userLoc.lat, userLoc.lng, s.lat, s.lng);
+          dist = ` • ${d.toFixed(1)} km`;
+        }
+        li.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="font-medium">${s.name}</div>
+              <div class="text-xs text-gray-500">${s.city}${dist}</div>
+              <div class="mt-1 text-xs"><strong>Types:</strong> ${s.types.join(' / ')} • <strong>Max:</strong> ${Math.max(...s.speeds)} kW • <strong>₹</strong>${s.rate}/kWh</div>
+              <div class="mt-1 text-xs text-gray-600"><strong>Amenities:</strong> ${s.amenities.join(', ')}</div>
+            </div>
+            <button class="px-2 py-1 text-xs rounded-lg bg-brand-500 text-white" data-goto="${s.id}">View</button>
+          </div>
+        `;
+        resultsList.appendChild(li);
+        li.querySelector('button').addEventListener('click', () => {
+          const marker = markersById[s.id];
+          if (marker) {
+            map.setView([s.lat, s.lng], 14);
+            marker.openPopup();
+          }
+        });
+        return li;
+      });
+      if (!items.length) {
+        resultsList.innerHTML = '<li class="text-sm text-gray-600">No stations match your filters.</li>';
+      }
+    }
+
+    function applyFilters(centerForSort) {
+      let filtered = stations.filter(matchesFilters);
+      // If user location available, sort by distance
+      if (centerForSort) {
+        filtered = filtered
+          .map(s => ({ s, d: haversine(centerForSort.lat, centerForSort.lng, s.lat, s.lng) }))
+          .sort((a,b) => a.d - b.d)
+          .map(x => x.s);
+      }
+      renderMarkers(filtered);
+      updateResults(filtered, centerForSort);
+      if (filtered.length) {
+        const bounds = L.latLngBounds(filtered.map(s => [s.lat, s.lng]));
+        map.fitBounds(bounds.pad(0.2));
+      }
+    }
+
+    // Initial render
+    applyFilters();
+
+    // Events
+    [searchInput, filterAC, filterDC, speedRange].forEach(el => {
+      el.addEventListener('input', () => {
+        speedValue.textContent = speedRange.value;
+        applyFilters();
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      filterAC.checked = true;
+      filterDC.checked = true;
+      speedRange.value = 0;
+      speedValue.textContent = '0';
+      applyFilters();
+    });
+
+    nearMeBtn.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        alert('Geolocation not supported by your browser.');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          // Show user marker
+          const you = L.circleMarker(userLoc, { radius: 8 }).addTo(map).bindPopup('You are here');
+          you.openPopup();
+          map.setView(userLoc, 12);
+          applyFilters(userLoc);
+        },
+        err => {
+          alert('Unable to get location: ' + err.message);
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    });
+  </script>
+</body>
+</html>
